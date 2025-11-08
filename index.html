@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulador de Panoramas</title>
+    <!-- 1. Carga de Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 2. Configuraci贸n de fuente (Inter) -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Clases personalizadas para los resultados */
+        .resultado-positivo {
+            color: #10B981; /* green-600 */
+        }
+        .resultado-negativo {
+            color: #EF4444; /* red-600 */
+        }
+    </style>
+</head>
+<body class="bg-gray-100 p-4 md:p-8">
+
+    <div class="max-w-4xl mx-auto bg-white shadow-2xl rounded-2xl overflow-hidden">
+        
+        <!-- Cabecera -->
+        <div class="p-6 bg-gray-800 text-white">
+            <h1 class="text-2xl md:text-3xl font-bold">Simulador de Panoramas de Campa帽a</h1>
+            <p class="mt-1 text-gray-300">Ajusta las variables de tu embudo para proyectar resultados.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-0">
+            
+            <!-- Columna 1: Entradas (Inputs) -->
+            <div class="p-6 md:p-8 bg-gray-50 border-r border-gray-200">
+                <h2 class="text-xl font-semibold text-gray-700 mb-6 flex items-center">
+                    <span class="text-2xl mr-3">鈿欙笍</span>
+                    Panel de Control (Inputs)
+                </h2>
+
+                <!-- Costos de Campa帽a -->
+                <div class="mb-5">
+                    <label for="inversion" class="block text-sm font-medium text-gray-600 mb-1">Inversi贸n en Campa帽a ($)</label>
+                    <input type="number" id="inversion" value="520000" class="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                
+                <!-- Embudo (Tope) -->
+                <div class="mb-5">
+                    <label for="emailsEnviados" class="block text-sm font-medium text-gray-600 mb-1">Emails Enviados</label>
+                    <input type="number" id="emailsEnviados" value="100000" class="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+
+                <!-- Tasas de Conversi贸n (Variables Clave) -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div class="mb-5">
+                        <label for="tasaApertura" class="block text-sm font-medium text-gray-600 mb-1">Tasa Apertura (%)</label>
+                        <input type="number" id="tasaApertura" value="25" step="0.1" class="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div class="mb-5">
+                        <label for="tasaConversion" class="block text-sm font-medium text-gray-600 mb-1">Tasa Conv. (Abierto -> Lead) (%)</label>
+                        <input type="number" id="tasaConversion" value="2" step="0.1" class="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div class="mb-5">
+                        <label for="tasaLeadALlamada" class="block text-sm font-medium text-gray-600 mb-1">Tasa Conv. (Lead -> Llamada) (%)</label>
+                        <input type="number" id="tasaLeadALlamada" value="20" step="0.1" class="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div class="mb-5">
+                        <label for="tasaCierre" class="block text-sm font-medium text-gray-600 mb-1">Tasa Cierre (Llamada -> Cliente) (%)</label>
+                        <input type="number" id="tasaCierre" value="10" step="0.1" class="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                </div>
+
+                <!-- Constantes del Negocio -->
+                <hr class="my-4">
+                <h3 class="text-lg font-semibold text-gray-700 mb-4">Constantes del Negocio</h3>
+                <div class="mb-5">
+                    <label for="ingresoPorRegistro" class="block text-sm font-medium text-gray-600 mb-1">Ingreso por Registro Individual ($)</label>
+                    <input type="number" id="ingresoPorRegistro" value="235000" class="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                
+                <label class="block text-sm font-medium text-gray-600 mb-2">Mix de Registros por Cliente</label>
+                <div class="grid grid-cols-3 gap-3">
+                    <div>
+                        <label for="mixRegistros1" class="block text-xs font-medium text-gray-500">1 Reg. (%)</label>
+                        <input type="number" id="mixRegistros1" value="70" step="1" class="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label for="mixRegistros2" class="block text-xs font-medium text-gray-500">2 Regs. (%)</label>
+                        <input type="number" id="mixRegistros2" value="20" step="1" class="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label for="mixRegistros3" class="block text-xs font-medium text-gray-500">3 Regs. (%)</label>
+                        <input type="number" id="mixRegistros3" value="10" step="1" class="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                </div>
+                <div class="text-right mt-2 text-sm font-medium">
+                    Total: <span id="mixTotal" class="text-gray-600">100.0%</span>
+                </div>
+            </div>
+
+            <!-- Columna 2: Resultados (C谩lculos) -->
+            <div class="p-6 md:p-8">
+                <h2 class="text-xl font-semibold text-gray-700 mb-6 flex items-center">
+                    <span class="text-2xl mr-3">馃搳</span>
+                    Resultados del Panorama
+                </h2>
+
+                <!-- Resultados del Embudo -->
+                <div class="space-y-4 text-gray-800">
+                    <div class="flex justify-between items-center p-3 bg-gray-100 rounded-lg">
+                        <span class="font-medium">Emails Abiertos:</span>
+                        <span id="resEmailsAbiertos" class="font-bold text-lg text-gray-900">25,000</span>
+                    </div>
+                    <div class="flex justify-between items-center p-3 bg-gray-100 rounded-lg">
+                        <span class="font-medium">Leads Generados (Interesados):</span>
+                        <span id="resLeadsGenerados" class="font-bold text-lg text-gray-900">500</span>
+                    </div>
+                    <div class="flex justify-between items-center p-3 bg-gray-100 rounded-lg">
+                        <span class="font-medium">Llamadas de Venta Agendadas:</span>
+                        <span id="resLlamadasAgendadas" class="font-bold text-lg text-gray-900">100</span>
+                    </div>
+                    <div class="flex justify-between items-center p-3 bg-gray-100 rounded-lg">
+                        <span class="font-medium">Clientes Nuevos Cerrados:</span>
+                        <span id="resClientesNuevos" class="font-bold text-lg text-gray-900">10</span>
+                    </div>
+                    <div class="flex justify-between items-center p-3 bg-blue-50 border-l-4 border-blue-400 rounded-r-lg mt-2">
+                        <span class="font-medium text-blue-800">Ingreso Promedio (Calculado):</span>
+                        <span id="resIngresoPromedio" class="font-bold text-lg text-blue-900">$329,000</span>
+                    </div>
+                </div>
+
+                <!-- Separador -->
+                <hr class="my-6 border-t-2 border-gray-200 border-dashed">
+
+                <!-- Resultados Financieros (El Resumen) -->
+                <div class="space-y-5">
+                    <div class="p-4 bg-gray-100 rounded-lg">
+                        <span class="block text-sm font-medium text-gray-600">Ingresos Totales Generados</span>
+                        <span id="resIngresosTotales" class="block text-3xl font-bold text-gray-900">$3,290,000</span>
+                    </div>
+
+                    <div class="p-4 bg-gray-100 rounded-lg">
+                        <span class="block text-sm font-medium text-gray-600">Ganancia / P茅rdida NETA</span>
+                        <span id="resGananciaNeta" class="block text-4xl font-bold resultado-positivo">$2,770,000</span>
+                    </div>
+
+                    <div class="p-4 bg-gray-100 rounded-lg">
+                        <span class="block text-sm font-medium text-gray-600">Retorno de la Inversi贸n (ROI)</span>
+                        <span id="resROI" class="block text-3xl font-bold resultado-positivo">532.7%</span>
+                    </div>
+                </div>
+
+                <!-- Punto de Equilibrio -->
+                <hr class="my-6 border-t-2 border-gray-200 border-dashed">
+                <div class="p-4 bg-blue-50 border-l-4 border-blue-500 rounded-r-lg">
+                    <h4 class="font-semibold text-blue-800">Punto de Equilibrio de la Campa帽a</h4>
+                    <p class="text-blue-700">Necesitas cerrar <strong id="resPEClientes" class="text-lg">1.58</strong> clientes solo para cubrir la inversi贸n de <strong id="resPEInversion">$520,000</strong>.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="text-center mt-6 text-gray-500 text-sm">
+        Un simulador interactivo. Los campos de la izquierda son editables.
+    </footer>
+
+    <!-- 3. L贸gica de JavaScript (Las "F贸rmulas") -->
+    <script>
+        // Seleccionamos todos los campos de input y de resultados
+        const inputs = {
+            inversion: document.getElementById('inversion'),
+            emailsEnviados: document.getElementById('emailsEnviados'),
+            tasaApertura: document.getElementById('tasaApertura'),
+            tasaConversion: document.getElementById('tasaConversion'),
+            tasaLeadALlamada: document.getElementById('tasaLeadALlamada'),
+            tasaCierre: document.getElementById('tasaCierre'),
+            ingresoPorRegistro: document.getElementById('ingresoPorRegistro'),
+            mixRegistros1: document.getElementById('mixRegistros1'),
+            mixRegistros2: document.getElementById('mixRegistros2'),
+            mixRegistros3: document.getElementById('mixRegistros3')
+        };
+
+        const results = {
+            emailsAbiertos: document.getElementById('resEmailsAbiertos'),
+            leadsGenerados: document.getElementById('resLeadsGenerados'),
+            llamadasAgendadas: document.getElementById('resLlamadasAgendadas'),
+            clientesNuevos: document.getElementById('resClientesNuevos'),
+            resIngresoPromedio: document.getElementById('resIngresoPromedio'),
+            ingresosTotales: document.getElementById('resIngresosTotales'),
+            gananciaNeta: document.getElementById('resGananciaNeta'),
+            roi: document.getElementById('resROI'),
+            peClientes: document.getElementById('resPEClientes'),
+            peInversion: document.getElementById('resPEInversion'),
+            mixTotal: document.getElementById('mixTotal')
+        };
+
+        // Formateadores de n煤meros para Moneda y Porcentaje
+        const formatMoneda = (num) => {
+            return new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 }).format(num);
+        };
+        const formatNumero = (num) => {
+            return new Intl.NumberFormat('es-AR', { maximumFractionDigits: 0 }).format(num);
+        };
+         const formatDecimal = (num) => {
+            return new Intl.NumberFormat('es-AR', { maximumFractionDigits: 2 }).format(num);
+        };
+        const formatPorcentaje = (num) => {
+            return new Intl.NumberFormat('es-AR', { style: 'percent', maximumFractionDigits: 1 }).format(num);
+        };
+
+        // La funci贸n principal que se ejecuta cada vez que cambia un input
+        function calcularPanoramas() {
+            // 1. Obtenemos los valores de los inputs
+            const inversion = parseFloat(inputs.inversion.value) || 0;
+            const emailsEnviados = parseFloat(inputs.emailsEnviados.value) || 0;
+            const tasaApertura = parseFloat(inputs.tasaApertura.value) / 100 || 0;
+            const tasaConversion = parseFloat(inputs.tasaConversion.value) / 100 || 0;
+            const tasaLeadALlamada = parseFloat(inputs.tasaLeadALlamada.value) / 100 || 0;
+            const tasaCierre = parseFloat(inputs.tasaCierre.value) / 100 || 0;
+            
+            // Nuevos inputs para el mix de registros
+            const ingresoPorRegistro = parseFloat(inputs.ingresoPorRegistro.value) || 0;
+            const mix1 = parseFloat(inputs.mixRegistros1.value) / 100 || 0;
+            const mix2 = parseFloat(inputs.mixRegistros2.value) / 100 || 0;
+            const mix3 = parseFloat(inputs.mixRegistros3.value) / 100 || 0;
+
+            // 2. Calculamos el embudo
+            const emailsAbiertos = emailsEnviados * tasaApertura;
+            const leadsGenerados = emailsAbiertos * tasaConversion;
+            const llamadasAgendadas = leadsGenerados * tasaLeadALlamada;
+            const clientesNuevos = llamadasAgendadas * tasaCierre;
+
+            // 3. Calculamos el ingreso promedio y los resultados financieros
+            // Esta es la nueva l贸gica clave:
+            const ingresoPromedio = (mix1 * 1 * ingresoPorRegistro) + 
+                                  (mix2 * 2 * ingresoPorRegistro) + 
+                                  (mix3 * 3 * ingresoPorRegistro);
+
+            const ingresosTotales = clientesNuevos * ingresoPromedio;
+            const gananciaNeta = ingresosTotales - inversion;
+            
+            // Evitar divisi贸n por cero en ROI
+            const roi = inversion > 0 ? gananciaNeta / inversion : 0;
+            
+            // 4. Calculamos el Punto de Equilibrio
+            // Evitar divisi贸n por cero si no hay ingreso promedio
+            const peClientes = ingresoPromedio > 0 ? inversion / ingresoPromedio : 0;
+
+            // 5. Actualizamos la interfaz (los resultados)
+            results.emailsAbiertos.textContent = formatNumero(emailsAbiertos);
+            results.leadsGenerados.textContent = formatNumero(leadsGenerados);
+            results.llamadasAgendadas.textContent = formatNumero(llamadasAgendadas);
+            results.clientesNuevos.textContent = formatDecimal(clientesNuevos); // Permitimos decimales aqu铆 para precisi贸n
+            results.resIngresoPromedio.textContent = formatMoneda(ingresoPromedio);
+            
+            results.ingresosTotales.textContent = formatMoneda(ingresosTotales);
+            results.gananciaNeta.textContent = formatMoneda(gananciaNeta);
+            results.roi.textContent = formatPorcentaje(roi);
+
+            results.peClientes.textContent = formatDecimal(peClientes);
+            results.peInversion.textContent = formatMoneda(inversion);
+
+            // Feedback para el total del mix
+            const totalMix = (mix1 + mix2 + mix3) * 100;
+            results.mixTotal.textContent = `${formatDecimal(totalMix)}%`;
+            results.mixTotal.classList.remove('text-red-600', 'text-gray-600');
+            if (Math.abs(totalMix - 100) > 0.01) {
+                results.mixTotal.classList.add('text-red-600');
+            } else {
+                results.mixTotal.classList.add('text-gray-600');
+            }
+
+            // 6. L贸gica de color para Ganancia y ROI
+            [results.gananciaNeta, results.roi].forEach(el => {
+                el.classList.remove('resultado-positivo', 'resultado-negativo');
+                if (gananciaNeta > 0) {
+                    el.classList.add('resultado-positivo');
+                } else if (gananciaNeta < 0) {
+                    el.classList.add('resultado-negativo');
+                }
+            });
+        }
+
+        // 7. Agregamos los "escuchadores" de eventos
+        // Cada vez que se cambia un n煤mero en un input, se recalcula todo
+        Object.values(inputs).forEach(input => {
+            input.addEventListener('input', calcularPanoramas);
+        });
+
+        // 8. Calculamos los valores iniciales al cargar la p谩gina
+        calcularPanoramas();
+
+    </script>
+</body>
+</html>
